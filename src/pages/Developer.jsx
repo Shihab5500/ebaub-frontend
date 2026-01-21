@@ -18,7 +18,7 @@ const Developer = () => {
           {/* Profile Image (From Public Folder) */}
           <div className="w-32 h-32 mx-auto -mt-16 bg-white p-1 rounded-full shadow-lg">
             <img 
-              src="/public/my-pic.jpg.jpeg"  // ⚠️ এখানে আপনার public ফোল্ডারের ছবির সঠিক নাম দিন (যেমন: shihab.png বা profile.jpg)
+              src="/my-pic.jpg.jpeg"  // ⚠️ এখানে আপনার public ফোল্ডারের ছবির সঠিক নাম দিন (যেমন: shihab.png বা profile.jpg)
               alt="Shahariyar Sani Shihab" 
               className="w-full h-full rounded-full object-cover border-4 border-gray-100"
             />
