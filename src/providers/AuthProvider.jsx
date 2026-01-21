@@ -1,64 +1,5 @@
 
 
-// import { createContext, useEffect, useState } from "react";
-// import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
-// import { auth } from "../firebase.config";
-
-// export const AuthContext = createContext(null);
-
-// const AuthProvider = ({ children }) => {
-//   const [user, setUser] = useState(null);
-//   const [dbUser, setDbUser] = useState(null); // এই স্টেটটা আমরা আপডেট করবো
-//   const [loading, setLoading] = useState(true);
-
-//   const loginUser = (email, password) => {
-//     setLoading(true);
-//     return signInWithEmailAndPassword(auth, email, password);
-//   };
-
-//   const logoutUser = () => {
-//     setLoading(true);
-//     setDbUser(null); // লগআউট হলে ডাটা ক্লিয়ার
-//     return signOut(auth);
-//   };
-
-//   useEffect(() => {
-//     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-//       setUser(currentUser);
-      
-//       if (currentUser?.email) {
-//         try {
-//           const res = await fetch(`http://localhost:5000/api/users/${currentUser.email}`);
-//           if (res.ok) {
-//             const data = await res.json();
-//             setDbUser(data); 
-//           } else {
-//             setDbUser(null);
-//           }
-//         } catch (error) {
-//           console.error("Auth Fetch Error:", error);
-//         }
-//       } else {
-//         setDbUser(null);
-//       }
-//       setLoading(false);
-//     });
-//     return () => unsubscribe();
-//   }, []);
-
-//   // ⚠️ লক্ষ্য করো: এখানে setDbUser পাঠানো হচ্ছে
-//   const authInfo = { user, dbUser, setDbUser, loginUser, logoutUser, loading };
-
-//   return (
-//     <AuthContext.Provider value={authInfo}>
-//       {children}
-//     </AuthContext.Provider>
-//   );
-// };
-
-// export default AuthProvider;
-
-
 
 import { createContext, useEffect, useState } from "react";
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
@@ -88,7 +29,7 @@ const AuthProvider = ({ children }) => {
       
       if (currentUser?.email) {
         try {
-          const res = await fetch(`http://localhost:5000/api/users/${currentUser.email}`);
+          const res = await fetch(`https://ebaub-backend.vercel.app/api/users/${currentUser.email}`);
           if (res.ok) {
             const data = await res.json();
 

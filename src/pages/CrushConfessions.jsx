@@ -1,51 +1,3 @@
-// import { useEffect, useState } from 'react';
-// import { Link } from 'react-router-dom';
-// import { FaPlus, FaHeart, FaUserSecret } from 'react-icons/fa';
-// import PostCard from '../components/PostCard';
-
-// const CrushConfessions = () => {
-//   const [posts, setPosts] = useState([]);
-
-//   // সার্ভার থেকে ডাটা আনা এবং ফিল্টার করা
-//   useEffect(() => {
-//     fetch('http://localhost:5000/api/posts')
-//       .then(res => res.json())
-//       .then(data => {
-//         // শুধু 'Crush Confessions' ক্যাটাগরির পোস্টগুলো আলাদা করা
-//         const filtered = data.filter(p => p.category === 'Crush Confessions');
-//         setPosts(filtered);
-//       })
-//       .catch(err => console.error(err));
-//   }, []);
-
-//   return (
-//     <div className="min-h-screen bg-pink-50 pb-20 pt-5">
-//       <div className="max-w-4xl mx-auto bg-gradient-to-r from-pink-500 to-rose-500 text-white py-8 px-4 text-center rounded-2xl shadow-lg mb-8 mx-4">
-//         <FaHeart className="text-4xl mx-auto mb-2 text-pink-200 animate-pulse" />
-//         <h1 className="text-3xl font-bold">Crush Confessions 💘</h1>
-//         <p className="opacity-90 text-sm mt-2 font-medium bg-white/20 inline-block px-4 py-1 rounded-full">
-//            <FaUserSecret className="inline mr-2"/> এখানে আপনার নাম ১০০% গোপন থাকবে!
-//         </p>
-//       </div>
-
-//       {/* পোস্ট লিস্ট */}
-//       <div className="max-w-2xl mx-auto px-4">
-//         {posts.length > 0 ? (
-//           posts.map(post => <PostCard key={post._id} post={post} />)
-//         ) : (
-//           <p className="text-center text-gray-500 mt-10">কোনো পোস্ট নেই! আপনিই প্রথম পোস্ট করুন। 💘</p>
-//         )}
-//       </div>
-
-//       <Link to="/create-post" className="fixed bottom-8 right-8 bg-pink-600 text-white p-4 rounded-full shadow-2xl hover:bg-pink-700 transition z-50">
-//         <FaPlus className="text-2xl" />
-//       </Link>
-//     </div>
-//   );
-// };
-
-// export default CrushConfessions;
-
 
 
 import { useEffect, useState } from 'react';
@@ -61,7 +13,7 @@ const CrushConfessions = () => {
   // সার্ভার থেকে ডাটা আনা এবং ফিল্টার করা
   useEffect(() => {
     setLoading(true);
-    fetch('http://localhost:5000/api/posts')
+    fetch('https://ebaub-backend.vercel.app/api/posts')
       .then(res => res.json())
       .then(data => {
         // শুধু 'Crush Confessions' ক্যাটাগরির পোস্টগুলো আলাদা করা

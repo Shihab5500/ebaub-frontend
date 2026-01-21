@@ -1,46 +1,3 @@
-// import { useEffect, useState } from 'react';
-// import { Link } from 'react-router-dom';
-// import { FaPlus, FaCameraRetro } from 'react-icons/fa';
-// import PostCard from '../components/PostCard';
-
-// const CampusSriti = () => {
-//   const [posts, setPosts] = useState([]);
-
-//   useEffect(() => {
-//     fetch('http://localhost:5000/api/posts')
-//       .then(res => res.json())
-//       .then(data => {
-//         const filtered = data.filter(p => p.category === 'Campus Sriti');
-//         setPosts(filtered);
-//       })
-//       .catch(err => console.error(err));
-//   }, []);
-
-//   return (
-//     <div className="min-h-screen bg-green-50 pb-20 pt-5">
-//       <div className="max-w-4xl mx-auto bg-gradient-to-r from-green-600 to-teal-600 text-white py-8 px-4 text-center rounded-2xl shadow-lg mb-8 mx-4">
-//         <FaCameraRetro className="text-4xl mx-auto mb-2 text-green-200" />
-//         <h1 className="text-3xl font-bold">Campus Sriti 📸</h1>
-//         <p className="opacity-90 text-sm mt-2">আমাদের ক্যাম্পাসের সেরা মুহূর্তগুলো।</p>
-//       </div>
-
-//       <div className="max-w-2xl mx-auto px-4">
-//         {posts.length > 0 ? (
-//           posts.map(post => <PostCard key={post._id} post={post} />)
-//         ) : (
-//           <p className="text-center text-gray-500 mt-10">এখানে এখনো কোনো পোস্ট নেই!</p>
-//         )}
-//       </div>
-
-//       <Link to="/create-post" className="fixed bottom-8 right-8 bg-green-600 text-white p-4 rounded-full shadow-2xl hover:bg-green-700 transition z-50">
-//         <FaPlus className="text-2xl" />
-//       </Link>
-//     </div>
-//   );
-// };
-
-// export default CampusSriti;
-
 
 
 import { useEffect, useState } from 'react';
@@ -55,7 +12,7 @@ const CampusSriti = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch('http://localhost:5000/api/posts')
+    fetch('https://ebaub-backend.vercel.app/api/posts')
       .then(res => res.json())
       .then(data => {
         const filtered = data.filter(p => p.category === 'Campus Sriti');

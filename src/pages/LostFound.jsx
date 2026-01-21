@@ -1,46 +1,3 @@
-// import { useEffect, useState } from 'react';
-// import { Link } from 'react-router-dom';
-// import { FaPlus, FaSearchLocation } from 'react-icons/fa';
-// import PostCard from '../components/PostCard';
-
-// const LostFound = () => {
-//   const [posts, setPosts] = useState([]);
-
-//   useEffect(() => {
-//     fetch('http://localhost:5000/api/posts')
-//       .then(res => res.json())
-//       .then(data => {
-//         const filtered = data.filter(p => p.category === 'Lost & Found');
-//         setPosts(filtered);
-//       })
-//       .catch(err => console.error(err));
-//   }, []);
-
-//   return (
-//     <div className="min-h-screen bg-gray-100 pb-20 pt-5">
-//       <div className="max-w-4xl mx-auto bg-gray-800 text-white py-8 px-4 text-center rounded-2xl shadow-lg mb-8 mx-4">
-//         <FaSearchLocation className="text-4xl mx-auto mb-2 text-yellow-400" />
-//         <h1 className="text-3xl font-bold">Lost & Found 🔍</h1>
-//         <p className="text-gray-400 text-sm mt-1">হারানো জিনিসের সঠিক প্রমাণ দিয়ে গ্রহণ করুন।</p>
-//       </div>
-
-//       <div className="max-w-2xl mx-auto px-4">
-//         {posts.length > 0 ? (
-//            posts.map(post => <PostCard key={post._id} post={post} />)
-//         ) : (
-//            <p className="text-center text-gray-500 mt-10">এখনো কিছু হারানো যায়নি!</p>
-//         )}
-//       </div>
-
-//       <Link to="/create-post" className="fixed bottom-8 right-8 bg-gray-800 text-white p-4 rounded-full shadow-2xl hover:bg-black transition z-50">
-//         <FaPlus className="text-2xl" />
-//       </Link>
-//     </div>
-//   );
-// };
-
-// export default LostFound;
-
 
 
 import { useEffect, useState } from 'react';
@@ -55,7 +12,7 @@ const LostFound = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch('http://localhost:5000/api/posts')
+    fetch('https://ebaub-backend.vercel.app/api/posts')
       .then(res => res.json())
       .then(data => {
         const filtered = data.filter(p => p.category === 'Lost & Found');

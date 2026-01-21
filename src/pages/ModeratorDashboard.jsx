@@ -8,13 +8,13 @@ const ModeratorDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/posts').then(res => res.json()).then(data => setPosts(data));
+    fetch('https://ebaub-backend.vercel.app/api/posts').then(res => res.json()).then(data => setPosts(data));
   }, []);
 
   const deletePost = (id) => {
     if(!window.confirm("Are you sure you want to delete this post?")) return;
 
-    fetch(`http://localhost:5000/api/posts/${id}`, { method: 'DELETE' })
+    fetch(`https://ebaub-backend.vercel.app/api/posts/${id}`, { method: 'DELETE' })
     .then(res => res.json())
     .then(() => {
       setPosts(posts.filter(p => p._id !== id));
