@@ -29,10 +29,12 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 text-primary font-bold text-2xl group">
-            <FaUniversity className="text-3xl group-hover:text-green-700 transition" />
-            <span>EBAUB FUN HUB<span className="text-gray-600 text-lg"></span></span>
+          <Link to="/" className="flex items-center">
+            <img 
+              src="/main-logo.png"  // ✅ আপনার public ফোল্ডারের লোগো
+              alt="EBAUB Fun Hub Logo" 
+              className="h-16 w-auto object-contain hover:scale-105 transition duration-300" // ✅ সুন্দর দেখানোর জন্য স্টাইলিং
+            />
           </Link>
 
           {/* Desktop Menu */}
