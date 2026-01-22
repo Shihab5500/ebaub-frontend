@@ -183,7 +183,7 @@ const Register = () => {
           
           <div className="border border-dashed p-2 rounded-lg hover:bg-gray-50 transition">
             <label className="text-sm text-gray-500 block mb-1">Profile Picture:</label>
-            <input type="file" accept="image/*" onChange={handleFileChange} className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-green-700" />
+            <input type="file" accept="image/*" required onChange={handleFileChange} className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-green-700" />
           </div>
 
           <button type="submit" disabled={loading} className="w-full bg-primary text-white py-3 rounded-lg font-bold hover:bg-green-700 disabled:bg-gray-400 transition transform active:scale-95">

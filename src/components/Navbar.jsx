@@ -33,9 +33,17 @@ const Navbar = () => {
             <img 
               src="/main-logo.png"  // ✅ আপনার public ফোল্ডারের লোগো
               alt="EBAUB Fun Hub Logo" 
-              className="h-16 w-auto object-contain hover:scale-105 transition duration-300" // ✅ সুন্দর দেখানোর জন্য স্টাইলিং
+              className="h-16 mt-3 w-auto object-contain hover:scale-105 transition duration-300" // ✅ সুন্দর দেখানোর জন্য স্টাইলিং
             />
+
+          {/* Text Logo next to image */}
+          <span className="text-center pb-1 text-2xl font-extrabold text-primary tracking-tight group-hover:text-green-800 transition duration-300">
+          EBAUB FH
+          </span>
+
+
           </Link>
+          
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-6 items-center">
