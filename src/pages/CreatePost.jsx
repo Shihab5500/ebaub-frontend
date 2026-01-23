@@ -1,12 +1,13 @@
 
 
+
 // import { useState, useContext, useRef, useEffect } from 'react';
 // import { useNavigate } from 'react-router-dom';
 // import { AuthContext } from '../providers/AuthProvider';
 // import { FaImage, FaPaperPlane, FaTimes, FaSmile, FaGlobeAmericas, FaUserSecret } from 'react-icons/fa';
 // import { motion, AnimatePresence } from 'framer-motion';
 // import EmojiPicker from 'emoji-picker-react';
-// import Swal from 'sweetalert2'; // ✅ SweetAlert Import
+// import Swal from 'sweetalert2'; 
 
 // const CreatePost = () => {
 //   const navigate = useNavigate();
@@ -15,8 +16,11 @@
 //   // States
 //   const [content, setContent] = useState('');
 //   const [category, setCategory] = useState('');
-//   const [image, setImage] = useState(null);
-//   const [preview, setPreview] = useState(null);
+  
+//   // ✅ UPDATE: Multiple images support
+//   const [selectedImages, setSelectedImages] = useState([]); 
+//   const [imagePreviews, setImagePreviews] = useState([]);
+  
 //   const [loading, setLoading] = useState(false);
 //   const [showEmoji, setShowEmoji] = useState(false);
   
@@ -38,41 +42,54 @@
 //     setContent(prev => prev + emojiObject.emoji);
 //   };
 
+//   // ✅ UPDATE: Handle Multiple Files
 //   const handleImageChange = (e) => {
-//     const file = e.target.files[0];
-//     if (file) {
-//       if (file.size > 10 * 1024 * 1024) return Swal.fire('Too Big!', 'File size max 10MB', 'error');
-//       setImage(file);
-//       setPreview(URL.createObjectURL(file));
+//     const files = Array.from(e.target.files);
+    
+//     // লিমিট চেক (সর্বোচ্চ ৫টা ছবি)
+//     if (files.length + selectedImages.length > 5) {
+//       return Swal.fire('Limit Exceeded', 'You can upload maximum 5 images', 'warning');
 //     }
+
+//     const newPreviews = files.map(file => URL.createObjectURL(file));
+//     setSelectedImages([...selectedImages, ...files]);
+//     setImagePreviews([...imagePreviews, ...newPreviews]);
 //   };
 
-//   const removeImage = () => {
-//     setImage(null);
-//     setPreview(null);
+//   // ✅ UPDATE: Remove specific image
+//   const removeImage = (index) => {
+//     const newImages = selectedImages.filter((_, i) => i !== index);
+//     const newPreviews = imagePreviews.filter((_, i) => i !== index);
+//     setSelectedImages(newImages);
+//     setImagePreviews(newPreviews);
 //   };
 
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
 //     if (!dbUser) return Swal.fire('Oops!', 'Please Login First!', 'warning');
-//     if (!content.trim() && !image) return Swal.fire('Empty Post!', 'Write something or add an image!', 'info');
+//     if (!content.trim() && selectedImages.length === 0) return Swal.fire('Empty Post!', 'Write something or add an image!', 'info');
 
 //     setLoading(true);
 //     try {
-//       // 1. Image Upload Logic
-//       let imageUrl = "";
-//       if (image) {
-//         const data = new FormData();
-//         data.append("file", image);
-//         data.append("upload_preset", "ebaub_preset"); 
-//         data.append("cloud_name", "dhbcgeyjy"); 
+//       // ✅ 1. Upload Multiple Images Logic
+//       let uploadedImageUrls = [];
+      
+//       if (selectedImages.length > 0) {
+//         const uploadPromises = selectedImages.map(async (file) => {
+//           const data = new FormData();
+//           data.append("file", file);
+//           data.append("upload_preset", "ebaub_preset"); 
+//           data.append("cloud_name", "dhbcgeyjy"); 
 
-//         const res = await fetch("https://api.cloudinary.com/v1_1/dhbcgeyjy/image/upload", {
-//           method: "POST",
-//           body: data
+//           const res = await fetch("https://api.cloudinary.com/v1_1/dhbcgeyjy/image/upload", {
+//             method: "POST",
+//             body: data
+//           });
+//           const fileData = await res.json();
+//           return fileData.secure_url;
 //         });
-//         const file = await res.json();
-//         imageUrl = file.secure_url;
+
+//         uploadedImageUrls = await Promise.all(uploadPromises);
 //       }
 
 //       // 2. Save to Database
@@ -83,12 +100,12 @@
 //           user: dbUser._id,
 //           content,
 //           category,
-//           image: imageUrl
+//           images: uploadedImageUrls, // ✅ Array sent to backend
+//           image: uploadedImageUrls[0] || "" // Backward compatibility
 //         })
 //       });
 
 //       if (res.ok) {
-//         // ✅ Beautiful Success Alert
 //         Swal.fire({
 //           title: 'Post Published! 🚀',
 //           text: 'Your post is now live on the feed.',
@@ -96,7 +113,7 @@
 //           confirmButtonColor: '#16a34a',
 //           confirmButtonText: 'View Feed'
 //         }).then(() => {
-//           navigate('/'); // Redirect to Home
+//           navigate('/'); 
 //         });
 //       } else {
 //         Swal.fire('Failed!', 'Server Error. Try again later.', 'error');
@@ -157,7 +174,7 @@
 //               placeholder={`What's on your mind, ${dbUser?.name?.split(' ')[0] || 'User'}?`} 
 //               rows="6" 
 //               className="w-full p-4 text-lg border-2 border-gray-100 rounded-xl focus:border-primary outline-none resize-none bg-gray-50"
-//               required
+//               required={selectedImages.length === 0}
 //             ></textarea>
             
 //             <span className="absolute bottom-4 right-4 text-xs text-gray-400">{content.length} chars</span>
@@ -185,35 +202,49 @@
 //             </AnimatePresence>
 //           </div>
 
-//           {/* Image Upload Area */}
+//           {/* ✅ UPDATE: Multi Image Upload Area */}
 //           <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 transition relative group">
-//              {!preview ? (
+//              {imagePreviews.length === 0 ? (
 //                <>
-//                  <input type="file" id="postImg" className="hidden" accept="image/*" onChange={handleImageChange} />
+//                  <input 
+//                    type="file" 
+//                    id="postImg" 
+//                    className="hidden" 
+//                    accept="image/*" 
+//                    multiple // ✅ Allow multiple
+//                    onChange={handleImageChange} 
+//                  />
 //                  <label htmlFor="postImg" className="cursor-pointer flex flex-col items-center gap-2 text-gray-500 group-hover:text-primary transition">
 //                    <div className="bg-gray-100 p-4 rounded-full group-hover:bg-green-50 transition">
 //                      <FaImage className="text-3xl" />
 //                    </div>
-//                    <span className="font-medium">Click to Add Photo</span>
-//                    <span className="text-xs text-gray-400">(Max 5MB)</span>
+//                    <span className="font-medium">Click to Add Photos (Max 5)</span>
+//                    <span className="text-xs text-gray-400">(Max 5MB each)</span>
 //                  </label>
 //                </>
 //              ) : (
-//                <div className="relative inline-block">
-//                  <motion.img 
-//                    initial={{ opacity: 0, scale: 0.8 }}
-//                    animate={{ opacity: 1, scale: 1 }}
-//                    src={preview} 
-//                    alt="Preview" 
-//                    className="max-h-64 rounded-lg shadow-md" 
-//                  />
-//                  <button 
-//                    type="button" 
-//                    onClick={removeImage} 
-//                    className="absolute -top-3 -right-3 bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-red-600 transition"
-//                  >
-//                    <FaTimes />
-//                  </button>
+//                <div className="grid grid-cols-3 gap-2">
+//                  {/* ✅ Show Previews */}
+//                  {imagePreviews.map((src, index) => (
+//                    <div key={index} className="relative group/item">
+//                      <img src={src} alt="Preview" className="h-24 w-full object-cover rounded-lg shadow-sm" />
+//                      <button 
+//                        type="button" 
+//                        onClick={() => removeImage(index)} 
+//                        className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full shadow-lg hover:bg-red-600 transition"
+//                      >
+//                        <FaTimes size={12}/>
+//                      </button>
+//                    </div>
+//                  ))}
+                 
+//                  {/* Add More Button if less than 5 */}
+//                  {imagePreviews.length < 5 && (
+//                     <label htmlFor="postImgAddMore" className="flex items-center justify-center border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 h-24">
+//                         <FaImage className="text-gray-400" />
+//                         <input type="file" id="postImgAddMore" className="hidden" accept="image/*" multiple onChange={handleImageChange} />
+//                     </label>
+//                  )}
 //                </div>
 //              )}
 //           </div>
@@ -307,6 +338,18 @@ const CreatePost = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!dbUser) return Swal.fire('Oops!', 'Please Login First!', 'warning');
+
+    // 🔥 NEW RESTRICTION LOGIC START
+    if (dbUser.status !== 'approved') {
+        return Swal.fire({
+            icon: 'warning',
+            title: 'Account Pending',
+            text: 'আপনার অ্যাকাউন্ট এখনো অ্যাডমিন অ্যাপ্রুভ করেনি। অ্যাপ্রুভ হওয়ার পর পোস্ট করতে পারবেন।',
+            confirmButtonColor: '#d33'
+        });
+    }
+    // 🔥 NEW RESTRICTION LOGIC END
+
     if (!content.trim() && selectedImages.length === 0) return Swal.fire('Empty Post!', 'Write something or add an image!', 'info');
 
     setLoading(true);
@@ -347,11 +390,11 @@ const CreatePost = () => {
 
       if (res.ok) {
         Swal.fire({
-          title: 'Post Published! 🚀',
-          text: 'Your post is now live on the feed.',
+          title: 'Post Submitted! ⏳',
+          text: 'Your post is pending for admin approval.', // Message updated
           icon: 'success',
           confirmButtonColor: '#16a34a',
-          confirmButtonText: 'View Feed'
+          confirmButtonText: 'OK'
         }).then(() => {
           navigate('/'); 
         });
@@ -444,49 +487,49 @@ const CreatePost = () => {
 
           {/* ✅ UPDATE: Multi Image Upload Area */}
           <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 transition relative group">
-             {imagePreviews.length === 0 ? (
-               <>
-                 <input 
-                   type="file" 
-                   id="postImg" 
-                   className="hidden" 
-                   accept="image/*" 
-                   multiple // ✅ Allow multiple
-                   onChange={handleImageChange} 
-                 />
-                 <label htmlFor="postImg" className="cursor-pointer flex flex-col items-center gap-2 text-gray-500 group-hover:text-primary transition">
-                   <div className="bg-gray-100 p-4 rounded-full group-hover:bg-green-50 transition">
-                     <FaImage className="text-3xl" />
-                   </div>
-                   <span className="font-medium">Click to Add Photos (Max 5)</span>
-                   <span className="text-xs text-gray-400">(Max 5MB each)</span>
-                 </label>
-               </>
-             ) : (
-               <div className="grid grid-cols-3 gap-2">
-                 {/* ✅ Show Previews */}
-                 {imagePreviews.map((src, index) => (
-                   <div key={index} className="relative group/item">
-                     <img src={src} alt="Preview" className="h-24 w-full object-cover rounded-lg shadow-sm" />
-                     <button 
-                       type="button" 
-                       onClick={() => removeImage(index)} 
-                       className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full shadow-lg hover:bg-red-600 transition"
-                     >
-                       <FaTimes size={12}/>
-                     </button>
-                   </div>
-                 ))}
-                 
-                 {/* Add More Button if less than 5 */}
-                 {imagePreviews.length < 5 && (
-                    <label htmlFor="postImgAddMore" className="flex items-center justify-center border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 h-24">
-                        <FaImage className="text-gray-400" />
-                        <input type="file" id="postImgAddMore" className="hidden" accept="image/*" multiple onChange={handleImageChange} />
-                    </label>
-                 )}
-               </div>
-             )}
+              {imagePreviews.length === 0 ? (
+                <>
+                  <input 
+                    type="file" 
+                    id="postImg" 
+                    className="hidden" 
+                    accept="image/*" 
+                    multiple // ✅ Allow multiple
+                    onChange={handleImageChange} 
+                  />
+                  <label htmlFor="postImg" className="cursor-pointer flex flex-col items-center gap-2 text-gray-500 group-hover:text-primary transition">
+                    <div className="bg-gray-100 p-4 rounded-full group-hover:bg-green-50 transition">
+                      <FaImage className="text-3xl" />
+                    </div>
+                    <span className="font-medium">Click to Add Photos (Max 5)</span>
+                    <span className="text-xs text-gray-400">(Max 5MB each)</span>
+                  </label>
+                </>
+              ) : (
+                <div className="grid grid-cols-3 gap-2">
+                  {/* ✅ Show Previews */}
+                  {imagePreviews.map((src, index) => (
+                    <div key={index} className="relative group/item">
+                      <img src={src} alt="Preview" className="h-24 w-full object-cover rounded-lg shadow-sm" />
+                      <button 
+                        type="button" 
+                        onClick={() => removeImage(index)} 
+                        className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full shadow-lg hover:bg-red-600 transition"
+                      >
+                        <FaTimes size={12}/>
+                      </button>
+                    </div>
+                  ))}
+                  
+                  {/* Add More Button if less than 5 */}
+                  {imagePreviews.length < 5 && (
+                     <label htmlFor="postImgAddMore" className="flex items-center justify-center border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 h-24">
+                         <FaImage className="text-gray-400" />
+                         <input type="file" id="postImgAddMore" className="hidden" accept="image/*" multiple onChange={handleImageChange} />
+                     </label>
+                  )}
+                </div>
+              )}
           </div>
 
           {/* Submit Button */}
