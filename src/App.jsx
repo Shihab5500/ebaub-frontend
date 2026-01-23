@@ -1,47 +1,5 @@
 
 
-// import { BrowserRouter, Routes, Route } from 'react-router-dom';
-// import Navbar from './components/Navbar';
-// import Home from './pages/Home';
-// import Login from './pages/Login';
-// import Register from './pages/Register';
-// import Dashboard from './pages/Dashboard';
-// import CreatePost from './pages/CreatePost';
-// import CrushConfessions from './pages/CrushConfessions';
-// import TrollFun from './pages/TrollFun';
-// import CampusSriti from './pages/CampusSriti';
-// import LostFound from './pages/LostFound';
-// import AdminDashboard from './pages/AdminDashboard'; // ইমপোর্ট
-// import ModeratorDashboard from './pages/ModeratorDashboard'; // ইমপোর্ট
-
-// function App() {
-//   return (
-//     <BrowserRouter>
-//       <Navbar />
-//       <Routes>
-//         <Route path="/" element={<Home />} />
-//         <Route path="/login" element={<Login />} />
-//         <Route path="/register" element={<Register />} />
-//         <Route path="/dashboard" element={<Dashboard />} />
-//         <Route path="/create-post" element={<CreatePost />} />
-        
-//         {/* Categories */}
-//         <Route path="/crush" element={<CrushConfessions />} />
-//         <Route path="/troll" element={<TrollFun />} />
-//         <Route path="/campus-sriti" element={<CampusSriti />} />
-//         <Route path="/lost-found" element={<LostFound />} />
-
-//         {/* --- New Admin Routes --- */}
-//         <Route path="/admin-dashboard" element={<AdminDashboard />} />
-//         <Route path="/moderator-dashboard" element={<ModeratorDashboard />} />
-//       </Routes>
-//     </BrowserRouter>
-//   );
-// }
-
-// export default App;  
-
-
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer'; // ✅ Footer ইমপোর্ট

@@ -1,5 +1,6 @@
 
 
+
 // import { useState, useContext, useRef } from 'react';
 // import { AuthContext } from '../providers/AuthProvider';
 // import { motion, AnimatePresence } from 'framer-motion';
@@ -63,6 +64,10 @@
 
 //   const handleReact = async (type) => {
 //     if (!dbUser) return toast.error("Please Login First!");
+    
+//     // 🔥 RESTRICTION LOGIC
+//     if (dbUser.status !== 'approved') return toast.error("Account Pending Approval! Cannot React.");
+
 //     setShowReactions(false);
 //     try {
 //       const res = await fetch(`${API_URL}/api/posts/${safePost._id}/react`, {
@@ -160,6 +165,10 @@
 //   const handleComment = async (e) => {
 //     e.preventDefault();
 //     if (!dbUser) return toast.error("Login First!");
+    
+//     // 🔥 RESTRICTION LOGIC
+//     if (dbUser.status !== 'approved') return toast.error("Account Pending Approval! Cannot Comment.");
+
 //     if (!commentText.trim()) return;
 //     try {
 //       const res = await fetch(`${API_URL}/api/posts/${safePost._id}/comment`, {
@@ -389,8 +398,7 @@ const reactionsMap = {
 
 const PostCard = ({ post }) => {
   const { dbUser } = useContext(AuthContext);
-  // 🔥 API URL
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const API_URL = import.meta.env.VITE_API_URL || 'https://ebaub-backend.vercel.app';
 
   const [currentPost, setCurrentPost] = useState(post);
   
@@ -423,18 +431,23 @@ const PostCard = ({ post }) => {
   
   const myReaction = reactionsArray.find(r => r.user === dbUser?._id);
 
-  // Text Logic
   const textLimit = 150; 
   const isLongText = content?.length > textLimit;
   const displayContent = isExpanded ? content : content?.slice(0, textLimit);
 
-  // --- Handlers --- (Same logic)
+  // 🔥 Helper for formatting counts
+  const formatCount = (num) => {
+    if (!num) return 0;
+    return new Intl.NumberFormat('en-US', {
+      notation: "compact",
+      maximumFractionDigits: 1
+    }).format(num);
+  };
 
+  // --- Handlers ---
   const handleReact = async (type) => {
     if (!dbUser) return toast.error("Please Login First!");
-    
-    // 🔥 RESTRICTION LOGIC
-    if (dbUser.status !== 'approved') return toast.error("Account Pending Approval! Cannot React.");
+    if (dbUser.status !== 'approved') return toast.error("Account Pending Approval!");
 
     setShowReactions(false);
     try {
@@ -454,16 +467,11 @@ const PostCard = ({ post }) => {
   const handleDeleteComment = async (commentId) => {
     const result = await Swal.fire({
       title: 'Delete this comment?',
-      text: "You won't be able to revert this!",
+      text: "Cannot be undone!",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, delete!',
-      cancelButtonText: 'Cancel',
-      customClass: {
-        popup: 'rounded-xl',
-        confirmButton: 'bg-red-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-red-700 mx-2',
-        cancelButton: 'bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 mx-2'
-      },
+      customClass: { confirmButton: 'bg-red-600 text-white px-4 py-2 rounded mx-2', cancelButton: 'bg-gray-500 text-white px-4 py-2 rounded mx-2' },
       buttonsStyling: false
     });
 
@@ -474,7 +482,6 @@ const PostCard = ({ post }) => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId: dbUser._id })
         });
-
         if (res.ok) {
           const updatedPost = await res.json();
           setCurrentPost(updatedPost);
@@ -487,16 +494,11 @@ const PostCard = ({ post }) => {
   const handleDelete = async () => {
     const result = await Swal.fire({
       title: 'Delete Post?',
-      text: "This cannot be undone!",
+      text: "Cannot be undone!",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, delete!',
-      cancelButtonText: 'Cancel',
-      customClass: {
-        popup: 'rounded-xl',
-        confirmButton: 'bg-red-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-red-700 mx-2',
-        cancelButton: 'bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 mx-2'
-      },
+      customClass: { confirmButton: 'bg-red-600 text-white px-4 py-2 rounded mx-2', cancelButton: 'bg-gray-500 text-white px-4 py-2 rounded mx-2' },
       buttonsStyling: false
     });
 
@@ -504,12 +506,7 @@ const PostCard = ({ post }) => {
       try {
         await fetch(`${API_URL}/api/posts/${safePost._id}`, { method: 'DELETE' });
         setCurrentPost(null);
-        Swal.fire({
-            title: "Deleted!",
-            icon: "success",
-            customClass: { confirmButton: 'bg-green-600 text-white px-4 py-2 rounded-lg font-bold' },
-            buttonsStyling: false
-        });
+        Swal.fire({ title: "Deleted!", icon: "success", customClass: { confirmButton: 'bg-green-600 text-white px-4 py-2 rounded' }, buttonsStyling: false });
       } catch (err) { toast.error("Failed to delete"); }
     }
   };
@@ -525,7 +522,7 @@ const PostCard = ({ post }) => {
         const updated = await res.json();
         setCurrentPost(updated);
         setIsEditing(false);
-        toast.success("Updated Successfully");
+        toast.success("Updated");
       }
     } catch (err) { toast.error("Failed to update"); }
   };
@@ -533,10 +530,7 @@ const PostCard = ({ post }) => {
   const handleComment = async (e) => {
     e.preventDefault();
     if (!dbUser) return toast.error("Login First!");
-    
-    // 🔥 RESTRICTION LOGIC
-    if (dbUser.status !== 'approved') return toast.error("Account Pending Approval! Cannot Comment.");
-
+    if (dbUser.status !== 'approved') return toast.error("Account Pending Approval!");
     if (!commentText.trim()) return;
     try {
       const res = await fetch(`${API_URL}/api/posts/${safePost._id}/comment`, {
@@ -569,14 +563,7 @@ const PostCard = ({ post }) => {
 
   if (!currentPost) return null;
   const canModify = dbUser && (dbUser._id === user?._id || dbUser.role === 'admin');
-
-  // 🔥 PROTECTION STYLES (রাইট ক্লিক ও সিলেকশন বন্ধ করার জন্য)
-  const protectionStyle = {
-    userSelect: 'none',
-    WebkitUserSelect: 'none',
-    WebkitTouchCallout: 'none', // iOS Long press বন্ধ করে
-    pointerEvents: 'none' // ক্লিক করা যাবে, কিন্তু ড্র্যাগ না
-  };
+  const protectionStyle = { userSelect: 'none', WebkitUserSelect: 'none', WebkitTouchCallout: 'none', pointerEvents: 'none' };
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="bg-white rounded-2xl shadow-md p-5 mb-6 border border-gray-100 relative w-full max-w-full overflow-hidden">
@@ -601,7 +588,6 @@ const PostCard = ({ post }) => {
           <h3 className="font-bold text-gray-800">{displayName}</h3>
           <div className="flex items-center gap-2 text-xs text-gray-500">
             <span>{createdAt ? moment(createdAt).fromNow() : 'Just now'}</span> • 
-            {/* 🔥 FIXED: Added 'whitespace-nowrap' to keep badge single line */}
             <span className={`px-2 py-0.5 rounded-full text-white text-[10px] font-bold whitespace-nowrap ${category === 'Crush Confessions' ? 'bg-pink-500' : 'bg-green-500'}`}>
               {category}
             </span>
@@ -632,57 +618,33 @@ const PostCard = ({ post }) => {
         </div>
       )}
 
-      {/* 🔥 IMAGE GALLERY (Protected & Full View) */}
+      {/* Images */}
       {images && images.length > 0 ? (
-        <div className={`grid gap-1 mb-4 rounded-xl overflow-hidden border bg-black
-          ${images.length === 1 ? 'grid-cols-1' : ''}
-          ${images.length === 2 ? 'grid-cols-2' : ''}
-          ${images.length >= 3 ? 'grid-cols-2' : ''}
-        `}>
+        <div className={`grid gap-1 mb-4 rounded-xl overflow-hidden border bg-black ${images.length === 1 ? 'grid-cols-1' : ''} ${images.length === 2 ? 'grid-cols-2' : ''} ${images.length >= 3 ? 'grid-cols-2' : ''} `}>
           {images.map((imgUrl, index) => (
             <div key={index} className={`relative overflow-hidden bg-black ${images.length >= 3 && index === 0 ? 'col-span-2 row-span-2' : 'h-64'}`}>
-              <img 
-                src={imgUrl.replace('/upload/', '/upload/w_800,q_auto,f_auto/')} 
-                alt={`Post-${index}`} 
-                
-                // ✅ UPDATED: object-contain for full image
-                className="w-full h-full object-contain hover:scale-105 transition duration-500 cursor-pointer"
-                loading="lazy"
-                
-                // ✅ PROTECTION
-                onContextMenu={(e) => e.preventDefault()} 
-                draggable="false"
-                style={protectionStyle}
-
-                // ✅ CLICK ACTION
-                onClick={() => window.open(imgUrl, '_blank')}
-              />
+              <img src={imgUrl.replace('/upload/', '/upload/w_800,q_auto,f_auto/')} alt={`Post-${index}`} className="w-full h-full object-contain hover:scale-105 transition duration-500 cursor-pointer" loading="lazy" onContextMenu={(e) => e.preventDefault()} draggable="false" style={protectionStyle} onClick={() => window.open(imgUrl, '_blank')} />
             </div>
           ))}
         </div>
       ) : image && (
-        // Backward compatibility
         <div className="w-full h-auto max-h-96 overflow-hidden rounded-xl mb-4 bg-black border">
-            <img 
-              src={image.replace('/upload/', '/upload/w_800,q_auto,f_auto/')} 
-              alt="Post" 
-              className="w-full h-full object-contain" 
-              loading="lazy"
-              
-              // ✅ PROTECTION
-              onContextMenu={(e) => e.preventDefault()} 
-              draggable="false"
-              style={protectionStyle}
-
-              // ✅ CLICK ACTION
-              onClick={() => window.open(image, '_blank')}
-            />
+            <img src={image.replace('/upload/', '/upload/w_800,q_auto,f_auto/')} alt="Post" className="w-full h-full object-contain" loading="lazy" onContextMenu={(e) => e.preventDefault()} draggable="false" style={protectionStyle} onClick={() => window.open(image, '_blank')} />
         </div>
       )}
 
-      {/* Actions */}
-      <div className="flex justify-between border-t pt-3 text-gray-600 relative select-none">
-        <div className="relative" onMouseEnter={() => setShowReactions(true)} onMouseLeave={() => setShowReactions(false)}>
+      {/* 🔥 FIXED ACTIONS LAYOUT 
+          - Mobile: Flex Row (এক লাইনে)
+          - Desktop (lg): Grid (উপরে ২টা, নিচে ১টা) 
+      */}
+      <div className="
+        border-t pt-3 text-gray-600 relative select-none w-full
+        flex justify-between items-center                /* Mobile Style: Flex row */
+        lg:grid lg:grid-cols-2 lg:gap-3 lg:items-center  /* Desktop Style: Grid 2 columns */
+      ">
+        
+        {/* Like Button (Desktop: Col 1) */}
+        <div className="relative flex items-center lg:justify-start" onMouseEnter={() => setShowReactions(true)} onMouseLeave={() => setShowReactions(false)}>
           <AnimatePresence>
             {showReactions && (
               <motion.div initial={{ opacity: 0, y: 10, scale: 0.8 }} animate={{ opacity: 1, y: -50, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.8 }} className="absolute left-0 bottom-full mb-2 bg-white shadow-2xl rounded-full px-3 py-2 flex gap-3 border z-20">
@@ -692,25 +654,39 @@ const PostCard = ({ post }) => {
               </motion.div>
             )}
           </AnimatePresence>
-          <button onTouchStart={handlePressStart} onTouchEnd={handlePressEnd} onMouseDown={handlePressStart} onMouseUp={handlePressEnd} onClick={handleMainButtonAction} className={`flex items-center gap-2 transition px-2 py-1 rounded-lg hover:bg-gray-100 active:bg-gray-200 ${myReaction ? 'text-blue-600 font-bold' : ''}`}>
+          
+          <button onTouchStart={handlePressStart} onTouchEnd={handlePressEnd} onMouseDown={handlePressStart} onMouseUp={handlePressEnd} onClick={handleMainButtonAction} className={`flex items-center gap-1 sm:gap-2 transition px-2 py-1 rounded-lg hover:bg-gray-100 active:bg-gray-200 ${myReaction ? 'text-blue-600 font-bold' : ''}`}>
             <span className="text-xl">{myReaction ? reactionsMap[myReaction.type] : '👍'}</span>
-            <span>{myReaction ? myReaction.type.charAt(0).toUpperCase() + myReaction.type.slice(1) : 'Like'} <span className="ml-1 text-gray-500 font-normal">({reactionsArray.length})</span></span>
+            <span className="text-sm font-medium whitespace-nowrap">
+                {myReaction ? myReaction.type.charAt(0).toUpperCase() + myReaction.type.slice(1) : 'Like'} 
+                {reactionsArray.length > 0 && ` (${formatCount(reactionsArray.length)})`}
+            </span>
           </button>
         </div>
         
-        <button onClick={() => setShowCommentBox(!showCommentBox)} className="flex items-center gap-2 hover:text-blue-500 transition px-2 py-1 rounded-lg hover:bg-gray-100">
-          <FaComment /> <span>{commentsArray.length}</span>
-        </button>
-        <button onClick={handleShare} className="flex items-center gap-2 hover:text-gray-800 transition px-2 py-1 rounded-lg hover:bg-gray-100">
-          <FaShare /> Share
-        </button>
+        {/* Comment Button (Desktop: Col 2 - Aligned End) */}
+        <div className="flex items-center lg:justify-end">
+            <button onClick={() => setShowCommentBox(!showCommentBox)} className="flex items-center gap-1 sm:gap-2 hover:text-blue-500 transition px-2 py-1 rounded-lg hover:bg-gray-100">
+            <FaComment /> 
+            <span className="text-sm font-medium whitespace-nowrap">
+                Comment {commentsArray.length > 0 && `(${formatCount(commentsArray.length)})`}
+            </span>
+            </button>
+        </div>
+
+        {/* Share Button (Desktop: Col Span 2 - Bottom Full Width) */}
+        <div className="flex items-center lg:col-span-2 lg:justify-center lg:w-full lg:bg-gray-50 lg:rounded-lg lg:mt-1">
+            <button onClick={handleShare} className="flex items-center justify-center gap-1 sm:gap-2 hover:text-gray-800 transition px-2 py-1 rounded-lg hover:bg-gray-100 w-full">
+            <FaShare /> <span className="text-sm font-medium">Share</span>
+            </button>
+        </div>
       </div>
 
-      {/* Comments */}
+      {/* Comments Box */}
       {showCommentBox && (
         <div className="mt-4 pt-4 border-t bg-gray-50 p-3 rounded-lg relative">
           <div className="max-h-60 overflow-y-auto mb-4 space-y-3">
-            {commentsArray.length === 0 && <p className="text-center text-gray-400 text-sm">No comments yet. Be the first!</p>}
+            {commentsArray.length === 0 && <p className="text-center text-gray-400 text-sm">No comments yet.</p>}
             
             {commentsArray.map((c, i) => (
               <div key={i} className="flex gap-2 items-start group">
