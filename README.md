@@ -1,16 +1,47 @@
-# React + Vite
+# 🎓 EBAUB Fun Hub - The Ultimate Campus Social Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**EBAUB Fun Hub** is a dynamic social media platform designed exclusively for students of **Exim Bank Agricultural University Bangladesh**. It connects students through confessions, memories, and community support.
 
-Currently, two official plugins are available:
+🌐 **Live Demo:** [https://ebaub-fun-hub.vercel.app](https://ebaub-fun-hub.vercel.app)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🚀 Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🔥 1. Crush Confessions (Anonymous)
+- Users can post confessions without revealing their identity.
+- Toggle between "Anonymous Mode" and "Public Mode".
+- Safe space to share feelings.
 
-## Expanding the ESLint configuration
+### 😂 2. Troll & Fun
+- Share funny incidents and memes related to campus life.
+- React and comment on posts to engage with others.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 📸 3. Campus Sriti (Memories)
+- A digital gallery to store campus memories.
+- **Advanced Gallery View:** Multiple image upload support with a smart grid layout.
+- **Privacy Protection:** Images are protected from right-click, drag-and-drop, and long-press actions.
+
+### 🔍 4. Lost & Found
+- A dedicated section to report lost or found items within the campus.
+- Helps students reconnect with their belongings.
+
+### 🛡️ Admin & Security
+- **Role-based Access:** User, Moderator, and Admin roles.
+- **Content Moderation:** Admins can delete posts and ban users for violating community rules.
+- **Privacy First:** Image download prevention logic implemented.
+
+---
+
+## 🛠️ Technologies Used
+
+This project is built using the **MERN Stack** ensuring high performance and scalability.
+
+- **Frontend:** React.js, Tailwind CSS, Framer Motion (Animations), SweetAlert2.
+- **Backend:** Node.js, Express.js.
+- **Database:** MongoDB (Mongoose Schema).
+- **Authentication:** Firebase Auth.
+- **Image Storage:** Cloudinary (Multiple Image Upload Support).
+- **Hosting:** Vercel (Frontend & Backend).
+
+---
